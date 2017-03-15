@@ -4,15 +4,15 @@
 
 (def ^:private ^:const base-url "https://api.spotify.com")
 
-(defn format-path [& parts]
+(defn- format-path [& parts]
   (str base-url (str/join "/" parts)))
 
-(defn add-params [path params]
+(defn- add-params [path params]
   (let [p (u/format-params params)]
     (str path p)))
 
-(defn getm [url] {:method :get :url url})
-(defn putm [url] {:method :put :url url})
+(defn- getm [url] {:method :get :url url})
+(defn- putm [url] {:method :put :url url})
 
 (defn get-an-album [{id :id :as m}]
   (getm (add-params (format-path "/v1/albums" id) (select-keys m [:market]))))
@@ -45,7 +45,7 @@
 (defn get-audio-analysis-for-a-track [{id :id}]
   (assoc (getm (format-path "/v1/audio-analysis" id)) :authorization true))
 
-(defn search
+(defn- search
   [m]
   (let [data (u/scrub-hash-map m)
         keywords (u/format-search-query (:keywords data))
