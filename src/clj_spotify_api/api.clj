@@ -14,38 +14,8 @@
 (defn- getm [url] {:method :get :url url})
 (defn- putm [url] {:method :put :url url})
 
-(defn get-an-album [{id :id :as m}]
-  (getm (add-params (format-path "/v1/albums" id) (select-keys m [:market]))))
-
-(defn get-several-albums [{ids :ids :as m}]
-  (getm (add-params (format-path (str "/v1/albums/?ids=" (u/comma-separate-values ids)))
-                    (select-keys m [:market]))))
-
-(defn get-an-albums-tracks [{id :id :as m}]
-  (getm (add-params (format-path "/v1/albums" id "tracks")
-                    (select-keys m [:market :limit :offset]))))
-
-(defn get-an-artist [{id :id}]
-  (getm (format-path "/v1/artists" id)))
-
-(defn get-several-artists [{ids :ids}]
-  (getm (format-path (str "/v1/artists/?ids=" (u/comma-separate-values ids)))))
-
-(defn get-an-artists-albums [{id :id :as m}]
-  (getm (add-params (format-path "/v1/artists/" id "/albums")
-                    (select-keys m [:market :album_type :limit :offset]))))
-
-(defn get-an-artists-top-tracks [{id :id :as m}]
-  (getm (add-params (format-path "/v1/artists/" id "/top-tracks")
-                    (select-keys m [:country]))))
-
-(defn get-an-artists-related-artists [{id :id}]
-  (getm (format-path "/v1/artists" id "related-artists")))
-
-(defn get-audio-analysis-for-a-track [{id :id}]
-  (assoc (getm (format-path "/v1/audio-analysis" id)) :authorization true))
-
 (defn- search
+  "`https://developer.spotify.com/web-api/search-item/`"
   [m]
   (let [data (u/scrub-hash-map m)
         keywords (u/format-search-query (:keywords data))
@@ -54,19 +24,81 @@
         base (str base-url "/v1/search?q=")]
     (getm (str base keywords "+" filters "&" params))))
 
-(defn search-for-an-artist [m]
+(defn get-an-album
+  "`https://developer.spotify.com/web-api/get-album/`"
+  [{id :id :as m}]
+  (getm (add-params (format-path "/v1/albums" id) (select-keys m [:market]))))
+
+(defn get-several-albums
+  "`https://developer.spotify.com/web-api/get-several-albums/`"
+  [{ids :ids :as m}]
+  (getm (add-params (format-path (str "/v1/albums/?ids=" (u/comma-separate-values ids)))
+                    (select-keys m [:market]))))
+
+(defn get-an-albums-tracks
+  "`https://developer.spotify.com/web-api/get-albums-tracks/`"
+  [{id :id :as m}]
+  (getm (add-params (format-path "/v1/albums" id "tracks")
+                    (select-keys m [:market :limit :offset]))))
+
+(defn get-an-artist
+  "`https://developer.spotify.com/web-api/get-artist/`"
+  [{id :id}]
+  (getm (format-path "/v1/artists" id)))
+
+(defn get-several-artists
+  "`https://developer.spotify.com/web-api/get-several-artists/`"
+  [{ids :ids}]
+  (getm (format-path (str "/v1/artists/?ids=" (u/comma-separate-values ids)))))
+
+(defn get-an-artists-albums
+  "`https://developer.spotify.com/web-api/get-artists-albums/`"
+  [{id :id :as m}]
+  (getm (add-params (format-path "/v1/artists/" id "/albums")
+                    (select-keys m [:market :album_type :limit :offset]))))
+
+(defn get-an-artists-top-tracks
+  "`https://developer.spotify.com/web-api/get-artists-top-tracks/`"
+  [{id :id :as m}]
+  (getm (add-params (format-path "/v1/artists/" id "/top-tracks")
+                    (select-keys m [:country]))))
+
+(defn get-an-artists-related-artists
+  "`https://developer.spotify.com/web-api/get-related-artists/`"
+  [{id :id}]
+  (getm (format-path "/v1/artists" id "related-artists")))
+
+(defn get-audio-analysis-for-a-track
+  "`https://developer.spotify.com/web-api/get-audio-analysis/`"
+  [{id :id}]
+  (assoc (getm (format-path "/v1/audio-analysis" id)) :authorization true))
+
+(defn search-for-an-artist
+  "`https://developer.spotify.com/web-api/search-item/`"
+  [m]
   (search (assoc m :type "artist")))
 
-(defn search-for-a-playlist [m]
+(defn search-for-a-playlist
+  "`https://developer.spotify.com/web-api/search-item/`"
+  [m]
   (search (assoc m :type "playlist")))
 
-(defn search-for-a-track [m]
+(defn search-for-a-track
+  "`https://developer.spotify.com/web-api/search-item/`"
+  [m]
   (search (assoc m :type "track")))
 
-(defn search-for-an-album [m]
+(defn search-for-an-album
+  "`https://developer.spotify.com/web-api/search-item/`"
+  [m]
   (search (assoc m :type "album")))
 
-(defn get-a-category [m] nil)
+(defn get-a-category
+  "`https://developer.spotify.com/web-api/get-category/`"
+  [{id :id :as m}]
+  (assoc (getm (add-params (format-path "/v1/browse/categories" id)
+                           (select-keys m [:country :locale]))) :authorization true))
+
 (defn get-a-categorys-playlists [m] nil)
 (defn get-a-list-of-a-users-playlists [m] nil)
 (defn get-a-list-of-categories [m] nil)
