@@ -9,7 +9,7 @@ As There are no dependencies, it is up to you how to use. As an example.
 
 ```clojure
 (ns superapp.core
-  (:require [spotify.api :as api]
+  (:require [clj-spotify-api.api :as api]
             [cheshire.core :refer [parse-string]]
             [aleph.http :as http]))
 
