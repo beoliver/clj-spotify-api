@@ -7,7 +7,7 @@ The returned map is guaranteed to have two keys `:method` and `:url`. If the end
 
 As There are no dependencies, it is up to you how to use. As an example.
 
-```
+```clojure
 (ns superapp.core
   (:require [spotify.api :as api]
             [cheshire.core :refer [parse-string]]
@@ -26,16 +26,16 @@ As There are no dependencies, it is up to you how to use. As an example.
 ```
 We can now use it like this:
 
-```
+```clojure
 (spotify api/get-an-artist {:id "4FD5ipqAUiHAAwERSGlDuX"})
 ```
 The search function takes a list of keywords. It will double escape strings that contain two or more words. The keywords `:not` and `:or` are expaded into `"NOT"` and `"OR"`.
 
-```
+```clojure
 (spotify api/search-for-an-artist
          {:filters {:year 2000} :keywords ["dr" :not "dre"] :limit 5})
 ```
-```
+```clojure
 (api/search-for-an-artist {:keywords ["lil" "kim" :not "lil wayne"]})
 {:method :get, :url "https://api.spotify.com/v1/search?q=lil+kim+NOT+%22lil+wayne%22+&&type=artist"}
 ```
