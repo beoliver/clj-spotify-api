@@ -14,8 +14,144 @@
 (defn- getm [url] {:method :get :url url})
 (defn- putm [url] {:method :put :url url})
 
+
+(defn get-artist
+  "`https://developer.spotify.com/web-api/get-artist/`
+
+  required keys:
+  :id         - an artist id
+  "
+  [{id :id}]
+  (getm (format-path "/v1/artists" id)))
+
+(defn get-several-artists
+  "`https://developer.spotify.com/web-api/get-several-artists/`
+
+  required keys:
+  :id         - a collection of artist ids
+  "
+  [{ids :ids}]
+  (getm (format-path (str "/v1/artists/?ids=" (u/comma-separate-values ids)))))
+
+(defn get-artists-albums
+  "`https://developer.spotify.com/web-api/get-artists-albums/`
+
+  required keys:
+  :id         - an artist id
+
+  optional keys:
+  :market     - an ISO 3166-1 alpha-2 country code
+  :album_type - one of [album, single, appears_on, compilation].
+                String or Keyword
+  :limit      - Integer or String
+  :offset     - Integer or String
+  "
+  [{id :id :as m}]
+  (getm (add-params (format-path "/v1/artists/" id "/albums")
+                    (select-keys m [:market :album_type :limit :offset]))))
+
+(defn get-artists-top-tracks
+  "`https://developer.spotify.com/web-api/get-artists-top-tracks/`
+
+  required keys:
+  :id         - an artist id
+  :country    - an ISO 3166-1 alpha-2 country code
+  "
+  [{id :id :as m}]
+  (getm (add-params (format-path "/v1/artists/" id "/top-tracks")
+                    (select-keys m [:country]))))
+
+(defn get-related-artists
+  "`https://developer.spotify.com/web-api/get-related-artists/`
+
+  required keys:
+  :id         - an artist id
+  "
+  [{id :id}]
+  (getm (format-path "/v1/artists" id "related-artists")))
+
+;; albums ----------------------------------------------------------------------
+
+(defn get-album
+  "`https://developer.spotify.com/web-api/get-album/`
+
+  required keys:
+  :id         - an album id
+
+  optional keys:
+  :market     - an ISO 3166-1 alpha-2 country code
+  "
+  [{id :id :as m}]
+  (getm (add-params (format-path "/v1/albums" id) (select-keys m [:market]))))
+
+(defn get-several-albums
+  "`https://developer.spotify.com/web-api/get-several-albums/`
+
+  required keys:
+  :ids        - a collection of artist ids
+
+  optional keys:
+  :market     - an ISO 3166-1 alpha-2 country code
+  "
+  [{ids :ids :as m}]
+  (getm (add-params (format-path (str "/v1/albums/?ids=" (u/comma-separate-values ids)))
+                    (select-keys m [:market]))))
+
+(defn get-albums-tracks
+  "`https://developer.spotify.com/web-api/get-albums-tracks/`
+
+  required keys:
+  :id         - an album id
+
+  optional keys:
+  :market     - an ISO 3166-1 alpha-2 country code
+  :limit      - Integer or String
+  :offset     - Integer or String
+  "
+  [{id :id :as m}]
+  (getm (add-params (format-path "/v1/albums" id "tracks")
+                    (select-keys m [:market :limit :offset]))))
+
+(defn get-track
+  "`https://developer.spotify.com/web-api/get-track/`
+
+  required keys:
+  :id         - a track id
+
+  optional keys:
+  :market     - an ISO 3166-1 alpha-2 country code
+  "
+  [{id :id :as m}]
+  (getm (add-params (format-path "/v1/tracks" id) (select-keys m [:market]))))
+
+(defn get-several-tracks
+  "`https://developer.spotify.com/web-api/get-several-tracks/`
+
+  required keys:
+  :ids        - a collection of track ids
+
+  optional keys:
+  :market     - an ISO 3166-1 alpha-2 country code
+  "
+  [{ids :ids :as m}]
+  (getm (add-params (format-path (str "/v1/tracks/?ids=" (u/comma-separate-values ids)))
+                    (select-keys m [:market]))))
+
 (defn search-item
-  "`https://developer.spotify.com/web-api/search-item/`"
+  "`https://developer.spotify.com/web-api/search-item/`
+
+  required keys:
+  :keywords   - a collection of strings Strings, the keywords :or and :not
+                are converted to OR and NOT, see the web-api page
+  :type       - one of :album, :artist, :playlist, :track (keyword or string)
+
+  optional keys:
+  :filters    - a map containing some or all of the keys:
+               :album, :artist, :track, :year, :tag, :genre, :upc, :isrc
+  :market     - an ISO 3166-1 alpha-2 country code
+  :limit      - Integer or String
+  :offset     - Integer or String
+  "
   [m]
   (let [data (u/scrub-hash-map m)
         keywords (u/format-search-query (:keywords data))
@@ -24,82 +160,78 @@
         base (str base-url "/v1/search?q=")]
     (getm (str base keywords "+" filters "&" params))))
 
-(defn get-album
-  "`https://developer.spotify.com/web-api/get-album/`"
-  [{id :id :as m}]
-  (getm (add-params (format-path "/v1/albums" id) (select-keys m [:market]))))
+(defn search-artists
+  "`https://developer.spotify.com/web-api/search-item/`
 
-(defn get-several-albums
-  "`https://developer.spotify.com/web-api/get-several-albums/`"
-  [{ids :ids :as m}]
-  (getm (add-params (format-path (str "/v1/albums/?ids=" (u/comma-separate-values ids)))
-                    (select-keys m [:market]))))
+  required keys:
+  :keywords   - a collection of strings Strings, the keywords :or and :not
+                are converted to OR and NOT, see the web-api page
 
-(defn get-albums-tracks
-  "`https://developer.spotify.com/web-api/get-albums-tracks/`"
-  [{id :id :as m}]
-  (getm (add-params (format-path "/v1/albums" id "tracks")
-                    (select-keys m [:market :limit :offset]))))
+  optional keys:
+  :filters    - a map containing some or all of the keys:
+               :album, :artist, :track, :year, :tag, :genre, :upc, :isrc
+  :market     - an ISO 3166-1 alpha-2 country code
+  :limit      - Integer or String
+  :offset     - Integer or String
+  "
+  [m]
+  (search-item (assoc m :type "artist")))
 
-(defn get-track
-  "`https://developer.spotify.com/web-api/get-track/`"
-  [m] nil)
+(defn search-playlists
+  "`https://developer.spotify.com/web-api/search-item/`
 
-(defn get-several-tracks
-  "`https://developer.spotify.com/web-api/get-several-tracks/`"
-  [m] nil)
+  required keys:
+  :keywords   - a collection of strings Strings, the keywords :or and :not
+                are converted to OR and NOT, see the web-api page
 
-(defn get-artist
-  "`https://developer.spotify.com/web-api/get-artist/`"
-  [{id :id}]
-  (getm (format-path "/v1/artists" id)))
+  optional keys:
+  :filters    - a map containing some or all of the keys:
+               :album, :artist, :track, :year, :tag, :genre, :upc, :isrc
+  :market     - an ISO 3166-1 alpha-2 country code
+  :limit      - Integer or String
+  :offset     - Integer or String
+  "
+  [m]
+  (search-item (assoc m :type "playlist")))
 
-(defn get-several-artists
-  "`https://developer.spotify.com/web-api/get-several-artists/`"
-  [{ids :ids}]
-  (getm (format-path (str "/v1/artists/?ids=" (u/comma-separate-values ids)))))
+(defn search-tracks
+  "`https://developer.spotify.com/web-api/search-item/`
 
-(defn get-artists-albums
-  "`https://developer.spotify.com/web-api/get-artists-albums/`"
-  [{id :id :as m}]
-  (getm (add-params (format-path "/v1/artists/" id "/albums")
-                    (select-keys m [:market :album_type :limit :offset]))))
+  required keys:
+  :keywords   - a collection of strings Strings, the keywords :or and :not
+                are converted to OR and NOT, see the web-api page
 
-(defn get-artists-top-tracks
-  "`https://developer.spotify.com/web-api/get-artists-top-tracks/`"
-  [{id :id :as m}]
-  (getm (add-params (format-path "/v1/artists/" id "/top-tracks")
-                    (select-keys m [:country]))))
+  optional keys:
+  :filters    - a map containing some or all of the keys:
+               :album, :artist, :track, :year, :tag, :genre, :upc, :isrc
+  :market     - an ISO 3166-1 alpha-2 country code
+  :limit      - Integer or String
+  :offset     - Integer or String
+  "
+  [m]
+  (search-item (assoc m :type "track")))
 
-(defn get-related-artists
-  "`https://developer.spotify.com/web-api/get-related-artists/`"
-  [{id :id}]
-  (getm (format-path "/v1/artists" id "related-artists")))
+(defn search-albums
+  "`https://developer.spotify.com/web-api/search-item/`
+
+  required keys:
+  :keywords   - a collection of strings Strings, the keywords :or and :not
+                are converted to OR and NOT, see the web-api page
+
+  optional keys:
+  :filters    - a map containing some or all of the keys:
+               :album, :artist, :track, :year, :tag, :genre, :upc, :isrc
+  :market     - an ISO 3166-1 alpha-2 country code
+  :limit      - Integer or String
+  :offset     - Integer or String
+  "
+  [m]
+  (search-item (assoc m :type "album")))
 
 (defn get-audio-analysis
   "`https://developer.spotify.com/web-api/get-audio-analysis/`"
   [{id :id}]
   (assoc (getm (format-path "/v1/audio-analysis" id)) :authorization true))
-
-(defn search-artists
-  "`https://developer.spotify.com/web-api/search-item/`"
-  [m]
-  (search-item (assoc m :type "artist")))
-
-(defn search-playlists
-  "`https://developer.spotify.com/web-api/search-item/`"
-  [m]
-  (search-item (assoc m :type "playlist")))
-
-(defn search-tracks
-  "`https://developer.spotify.com/web-api/search-item/`"
-  [m]
-  (search-item (assoc m :type "track")))
-
-(defn search-albums
-  "`https://developer.spotify.com/web-api/search-item/`"
-  [m]
-  (search-item (assoc m :type "album")))
 
 (defn get-category
   "`https://developer.spotify.com/web-api/get-category/`"
