@@ -270,21 +270,31 @@
   (assoc (getm (add-params (format-path "/v1/browse/new-releases")
                            (select-keys m [:country :limit :offset]))) :authorization true))
 
-(defn get-list-users-playlists
-  "`https://developer.spotify.com/web-api/get-list-users-playlists/`"
-  [m] nil)
-
-(defn get-playlist [m]
-  "`https://developer.spotify.com/web-api/get-playlist/`"
-  nil)
-
-(defn get-playlists-tracks
-  "`https://developer.spotify.com/web-api/get-playlists-tracks/`"
-  [m] nil)
-
 (defn get-users-profile
   "`https://developer.spotify.com/web-api/get-users-profile/`"
-  [m] nil)
+  [{id :user_id}]
+  (getm (format-path "/v1/users" id)))
+
+(defn get-list-users-playlists
+  "`https://developer.spotify.com/web-api/get-list-users-playlists/`"
+  [{id :user_id :as m}]
+  (assoc (getm (add-params (format-path "/v1/users" id "playlists")
+                           (select-keys m [:limit :offset]))) :authorization true))
+
+(defn get-playlist
+  ;; TODO - check we handle fields properly
+  "`https://developer.spotify.com/web-api/get-playlist/`"
+  [{uid :user_id pid :playlist_id :as m}]
+  (assoc (getm (add-params (format-path "/v1/users" uid "playlists" pid)
+                           (select-keys m [:market :fields]))) :authorization true))
+
+(defn get-playlists-tracks
+  ;; TODO - check we handle fields properly
+  "`https://developer.spotify.com/web-api/get-playlists-tracks/`"
+  [{uid :user_id pid :playlist_id :as m}]
+  (assoc (getm (add-params (format-path "/v1/users" uid "playlists" pid "tracks")
+                           (select-keys m [:market :fields :limit :offset]))) :authorization true))
+
 
 (defn get-users-top-artists-and-tracks
   "`https://developer.spotify.com/web-api/get-users-top-artists-and-tracks/`"
