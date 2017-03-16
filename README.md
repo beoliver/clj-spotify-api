@@ -2,8 +2,10 @@
 Spotify api wrapper for clojure with no dependencies
 
 
-The library provides a series of functions that mirror the semantics of the [spotify api reference](https://developer.spotify.com/web-api/endpoint-reference/). These functions take a clojure map and return a clojure map.
+The library aims to provide a series of functions that mirror the semantics of the [spotify api reference](https://developer.spotify.com/web-api/endpoint-reference/). These functions take a clojure map and return a clojure map.
 The returned map is guaranteed to have two keys `:method` and `:url`. If the endpoint requires authentication, then a third key `:authentication` is included (with a value of `true`)
+
+Currently only endpoints that do not require authentication have been implemented.
 
 As There are no dependencies, it is up to you how to use. As an example.
 
@@ -33,9 +35,9 @@ The search function takes a list of keywords. It will double escape strings that
 
 ```clojure
 (spotify api/search-for-an-artist
-         {:filters {:year 2000} :keywords ["dr" :not "dre"] :limit 5})
+         {:filters {:year 2001} :keywords ["dr" :not "dre"] :limit 5})
 ```
 ```clojure
-(api/search-for-an-artist {:keywords ["lil" "kim" :not "lil wayne"]})
-{:method :get, :url "https://api.spotify.com/v1/search?q=lil+kim+NOT+%22lil+wayne%22+&&type=artist"}
+(api/search-for-an-artist {:keywords ["lil" :or "kim" :not "lil wayne"]})
+{:method :get, :url "https://api.spotify.com/v1/search?q=lil+OR+kim+NOT+%22lil+wayne%22+&&type=artist"}
 ```
