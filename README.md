@@ -39,7 +39,7 @@ The search function takes a list of keywords. It will double escape strings that
      :artists
      :items
      (map :name))
-("Dr. John" "Dr Sid" "Dr Zeus" "Dr. Alban" "Dr. Know")
+("Dr. John" "Dr. Hook" "Dr Zeus" "Dr. Jeffrey Thompson" "Dr. Alban")
 ```
 ```clojure
 (api/search-artists {:keywords ["lil" :or "kim" :not "lil wayne"]})
