@@ -14,7 +14,7 @@
 (defn- getm [url] {:method :get :url url})
 (defn- putm [url] {:method :put :url url})
 
-(defn- search
+(defn search-item
   "`https://developer.spotify.com/web-api/search-item/`"
   [m]
   (let [data (u/scrub-hash-map m)
@@ -24,7 +24,7 @@
         base (str base-url "/v1/search?q=")]
     (getm (str base keywords "+" filters "&" params))))
 
-(defn get-an-album
+(defn get-album
   "`https://developer.spotify.com/web-api/get-album/`"
   [{id :id :as m}]
   (getm (add-params (format-path "/v1/albums" id) (select-keys m [:market]))))
@@ -35,13 +35,21 @@
   (getm (add-params (format-path (str "/v1/albums/?ids=" (u/comma-separate-values ids)))
                     (select-keys m [:market]))))
 
-(defn get-an-albums-tracks
+(defn get-albums-tracks
   "`https://developer.spotify.com/web-api/get-albums-tracks/`"
   [{id :id :as m}]
   (getm (add-params (format-path "/v1/albums" id "tracks")
                     (select-keys m [:market :limit :offset]))))
 
-(defn get-an-artist
+(defn get-track
+  "`https://developer.spotify.com/web-api/get-track/`"
+  [m] nil)
+
+(defn get-several-tracks
+  "`https://developer.spotify.com/web-api/get-several-tracks/`"
+  [m] nil)
+
+(defn get-artist
   "`https://developer.spotify.com/web-api/get-artist/`"
   [{id :id}]
   (getm (format-path "/v1/artists" id)))
@@ -51,88 +59,206 @@
   [{ids :ids}]
   (getm (format-path (str "/v1/artists/?ids=" (u/comma-separate-values ids)))))
 
-(defn get-an-artists-albums
+(defn get-artists-albums
   "`https://developer.spotify.com/web-api/get-artists-albums/`"
   [{id :id :as m}]
   (getm (add-params (format-path "/v1/artists/" id "/albums")
                     (select-keys m [:market :album_type :limit :offset]))))
 
-(defn get-an-artists-top-tracks
+(defn get-artists-top-tracks
   "`https://developer.spotify.com/web-api/get-artists-top-tracks/`"
   [{id :id :as m}]
   (getm (add-params (format-path "/v1/artists/" id "/top-tracks")
                     (select-keys m [:country]))))
 
-(defn get-an-artists-related-artists
+(defn get-related-artists
   "`https://developer.spotify.com/web-api/get-related-artists/`"
   [{id :id}]
   (getm (format-path "/v1/artists" id "related-artists")))
 
-(defn get-audio-analysis-for-a-track
+(defn get-audio-analysis
   "`https://developer.spotify.com/web-api/get-audio-analysis/`"
   [{id :id}]
   (assoc (getm (format-path "/v1/audio-analysis" id)) :authorization true))
 
-(defn search-for-an-artist
+(defn search-artists
   "`https://developer.spotify.com/web-api/search-item/`"
   [m]
   (search (assoc m :type "artist")))
 
-(defn search-for-a-playlist
+(defn search-playlists
   "`https://developer.spotify.com/web-api/search-item/`"
   [m]
   (search (assoc m :type "playlist")))
 
-(defn search-for-a-track
+(defn search-tracks
   "`https://developer.spotify.com/web-api/search-item/`"
   [m]
   (search (assoc m :type "track")))
 
-(defn search-for-an-album
+(defn search-albums
   "`https://developer.spotify.com/web-api/search-item/`"
   [m]
   (search (assoc m :type "album")))
 
-(defn get-a-category
+(defn get-category
   "`https://developer.spotify.com/web-api/get-category/`"
-  [{id :id :as m}]
+  [{id :category_id :as m}]
   (assoc (getm (add-params (format-path "/v1/browse/categories" id)
                            (select-keys m [:country :locale]))) :authorization true))
 
-(defn get-a-categorys-playlists [m] nil)
-(defn get-a-list-of-a-users-playlists [m] nil)
-(defn get-a-list-of-categories [m] nil)
-(defn get-a-list-of-featured-playlists [m] nil)
-(defn get-a-list-of-new-releases [m] nil)
-(defn get-a-list-of-the-current-users-playlists [m] nil)
-(defn get-a-playlist [m] nil)
-(defn get-a-playlists-tracks [m] nil)
-(defn get-a-users-profile [m] nil)
-(defn get-a-users-top-artists-or-tracks [m] nil)
-(defn get-audio-features-for-a-track [m] nil)
-(defn get-audio-features-for-several-tracks [m] nil)
-(defn get-current-users-profile [m] nil)
-(defn get-current-user’s-recently-played-tracks [m] nil)
-(defn get-followed-artists [m] nil)
-(defn get-recommendations-based-on-seeds [m] nil)
-(defn get-several-tracks [m] nil)
-(defn get-users-saved-albums [m] nil)
-(defn get-users-saved-tracks [m] nil)
-(defn add-tracks-to-a-playlist [m] nil)
-(defn change-a-playlists-details [m] nil)
-(defn check-if-user-follows-users-or-artists [m] nil)
-(defn check-if-users-follow-a-playlist [m] nil)
-(defn check-users-saved-albums [m] nil)
-(defn check-users-saved-tracks [m] nil)
-(defn create-a-playlist [m] nil)
-(defn follow-a-playlist [m] nil)
-(defn follow-artists-or-users [m] nil)
-(defn remove-tracks-from-a-playlist [m] nil)
-(defn remove-users-saved-albums [m] nil)
-(defn remove-users-saved-tracks [m] nil)
-(defn reorder-a-playlists-tracks [m] nil)
-(defn replace-a-playlists-tracks [m] nil)
-(defn save-albums-for-user [m] nil)
-(defn save-tracks-for-user [m] nil)
-(defn unfollow-a-playlist [m] nil)
-(defn unfollow-artists-or-users [m] nil)
+(defn get-categorys-playlists
+  "`https://developer.spotify.com/web-api/get-categorys-playlists/`"
+  [{id :category_id :am m}]
+  (assoc (getm (add-params (format-path "/v1/browse/categories" id "playlists")
+                           (select-keys m [:country :limit :offset]))) :authorization true))
+
+(defn get-list-users-playlists
+  "`https://developer.spotify.com/web-api/get-list-users-playlists/`"
+  [{id :user_id :am m}]
+  (assoc (getm (add-params (format-path "/v1/users" id "playlists")
+                           (select-keys m [:limit :offset]))) :authorization true))
+
+(defn get-list-categories
+  "`https://developer.spotify.com/web-api/get-list-categories/`"
+  [m]
+  (assoc (getm (add-params (format-path "/v1/browse/categories")
+                           (select-keys m [:country :limit :offset :locale]))) :authorization true))
+
+(defn get-list-featured-playlists
+  "`https://developer.spotify.com/web-api/get-list-featured-playlists/`"
+  [m]
+  (assoc (getm (add-params (format-path "/v1/browse/featured-playlists")
+                           (select-keys m [:country :limit :offset :locale]))) :authorization true))
+
+
+(defn get-list-new-releases
+  "`https://developer.spotify.com/web-api/get-list-new-releases/`"
+  [m]
+  (assoc (getm (add-params (format-path "/v1/browse/new-releases")
+                           (select-keys m [:country :limit :offset]))) :authorization true))
+
+(defn get-list-users-playlists
+  "`https://developer.spotify.com/web-api/get-list-users-playlists/`"
+  [m] nil)
+
+(defn get-playlist [m]
+  "`https://developer.spotify.com/web-api/get-playlist/`"
+  nil)
+
+(defn get-playlists-tracks
+  "`https://developer.spotify.com/web-api/get-playlists-tracks/`"
+  [m] nil)
+
+(defn get-users-profile
+  "`https://developer.spotify.com/web-api/get-users-profile/`"
+  [m] nil)
+
+(defn get-users-top-artists-and-tracks
+  "`https://developer.spotify.com/web-api/get-users-top-artists-and-tracks/`"
+  [m] nil)
+
+(defn get-audio-features-for-a-track
+  "`https://developer.spotify.com/web-api/get-audio-features/`"
+  [m] nil)
+
+(defn get-several-audio-features
+  "`https://developer.spotify.com/web-api/get-several-audio-features/`"
+  [m] nil)
+
+(defn get-current-users-profile
+  "`https://developer.spotify.com/web-api/get-current-users-profile/`"
+  [m] nil)
+
+(defn get-recently-played
+  "`https://developer.spotify.com/web-api/web-api-personalization-endpoints/get-recently-played/`"
+  [m] nil)
+
+(defn get-followed-artists
+  "`https://developer.spotify.com/web-api/get-followed-artists/`"
+  [m] nil)
+
+(defn get-recommendations
+  "`https://developer.spotify.com/web-api/get-recommendations/`"
+  [m] nil)
+
+(defn get-users-saved-albums
+  "`https://developer.spotify.com/web-api/get-users-saved-albums/`"
+  [m] nil)
+
+(defn get-users-saved-tracks
+  "`https://developer.spotify.com/web-api/get-users-saved-tracks/`"
+  [m] nil)
+
+(defn add-tracks-to-playlist
+  "`https://developer.spotify.com/web-api/add-tracks-to-playlist/`"
+  [m] nil)
+
+(defn change-playlist-details
+  "`https://developer.spotify.com/web-api/change-playlist-details/`"
+  [m] nil)
+
+(defn check-current-user-follows
+  "`https://developer.spotify.com/web-api/check-current-user-follows/`"
+  [m] nil)
+
+(defn check-user-following-playlist
+  "`https://developer.spotify.com/web-api/check-user-following-playlist/`"
+  [m] nil)
+
+(defn check-users-saved-albums
+  "`https://developer.spotify.com/web-api/check-users-saved-albums/`"
+  [m] nil)
+
+(defn check-users-saved-tracks
+  "`https://developer.spotify.com/web-api/check-users-saved-tracks/`"
+  [m] nil)
+
+(defn create-playlist
+  "`https://developer.spotify.com/web-api/create-playlist/`"
+  [m] nil)
+
+(defn follow-playlist
+  "`https://developer.spotify.com/web-api/follow-playlist/`"
+  [m] nil)
+
+(defn follow-artists-users
+  "`https://developer.spotify.com/web-api/follow-artists-users/`"
+  [m]
+  nil)
+
+(defn remove-tracks-playlist
+  "`https://developer.spotify.com/web-api/remove-tracks-playlist/`"
+  [m] nil)
+
+(defn remove-albums-user
+  "`https://developer.spotify.com/web-api/remove-albums-user/`"
+  [m] nil)
+
+(defn remove-tracks-user
+  "`https://developer.spotify.com/web-api/remove-tracks-user/`"
+  [m] nil)
+
+(defn reorder-playlists-tracks
+  "`https://developer.spotify.com/web-api/reorder-playlists-tracks/`"
+  [m] nil)
+
+(defn replace-playlists-tracks
+  "`https://developer.spotify.com/web-api/replace-playlists-tracks/`"
+  [m] nil)
+
+(defn save-albums-user
+  "`https://developer.spotify.com/web-api/save-albums-user/`"
+  [m] nil)
+
+(defn save-tracks-user
+  "`https://developer.spotify.com/web-api/save-tracks-user/`"
+  [m] nil)
+
+(defn unfollow-playlist
+  "`https://developer.spotify.com/web-api/unfollow-playlist/`"
+  [m] nil)
+
+(defn unfollow-artists-users
+  "`https://developer.spotify.com/web-api/unfollow-artists-users/`"
+  [m] nil)
