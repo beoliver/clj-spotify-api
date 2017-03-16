@@ -15,27 +15,27 @@ As There are no dependencies, it is up to you how to use. As an example.
             [cheshire.core :refer [parse-string]]
             [aleph.http :as http]))
 
-(defn spotify
+(defn http-get
   "a simple function for making GET requests"
-  [f m]
-  (let [{m :method url :url} (f m)]
-    (case m
-      :get (-> @(http/get url {:throw-exceptions? false})
-               :body
-               byte-streams/to-string
-               (parse-string keyword))
-      nil)))
+  [{url :url}]
+  (-> @(http/get url {:throw-exceptions? false})
+      :body
+      byte-streams/to-string
+      (parse-string keyword)))
 ```
 We can now use it like this:
 
 ```clojure
-(spotify api/get-artist {:id "4FD5ipqAUiHAAwERSGlDuX"})
+(-> {:id "4FD5ipqAUiHAAwERSGlDuX" :some-key "this is some other data in the map"}
+    api/get-artist
+    http-get)
 ```
 The search function takes a list of keywords. It will double escape strings that contain two or more words. The keywords `:not` and `:or` are expaded into `"NOT"` and `"OR"`.
 
 ```clojure
-(spotify api/search-artists
-         {:filters {:year 2001} :keywords ["dr" :not "dre"] :limit 5})
+(-> {:filters {:year 2001} :keywords ["dr" :not "dre"] :limit 5}
+    api/search-artists
+    http-get)
 ```
 ```clojure
 (api/search-artists {:keywords ["lil" :or "kim" :not "lil wayne"]})
