@@ -1,4 +1,4 @@
-(defproject clj-spotify-api "0.1.0"
+(defproject clj-spotify-api "0.1.1"
   :description "Spotify api wrapper with no dependencies"
   :url "https://github.com/beoliver/clj-spotify-api"
   :license {:name "Eclipse Public License"

@@ -84,22 +84,22 @@
 (defn search-artists
   "`https://developer.spotify.com/web-api/search-item/`"
   [m]
-  (search (assoc m :type "artist")))
+  (search-item (assoc m :type "artist")))
 
 (defn search-playlists
   "`https://developer.spotify.com/web-api/search-item/`"
   [m]
-  (search (assoc m :type "playlist")))
+  (search-item (assoc m :type "playlist")))
 
 (defn search-tracks
   "`https://developer.spotify.com/web-api/search-item/`"
   [m]
-  (search (assoc m :type "track")))
+  (search-item (assoc m :type "track")))
 
 (defn search-albums
   "`https://developer.spotify.com/web-api/search-item/`"
   [m]
-  (search (assoc m :type "album")))
+  (search-item (assoc m :type "album")))
 
 (defn get-category
   "`https://developer.spotify.com/web-api/get-category/`"
@@ -109,13 +109,13 @@
 
 (defn get-categorys-playlists
   "`https://developer.spotify.com/web-api/get-categorys-playlists/`"
-  [{id :category_id :am m}]
+  [{id :category_id :as m}]
   (assoc (getm (add-params (format-path "/v1/browse/categories" id "playlists")
                            (select-keys m [:country :limit :offset]))) :authorization true))
 
 (defn get-list-users-playlists
   "`https://developer.spotify.com/web-api/get-list-users-playlists/`"
-  [{id :user_id :am m}]
+  [{id :user_id :as m}]
   (assoc (getm (add-params (format-path "/v1/users" id "playlists")
                            (select-keys m [:limit :offset]))) :authorization true))
 

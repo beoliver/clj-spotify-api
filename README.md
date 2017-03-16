@@ -33,9 +33,13 @@ We can now use it like this:
 The search function takes a list of keywords. It will double escape strings that contain two or more words. The keywords `:not` and `:or` are expaded into `"NOT"` and `"OR"`.
 
 ```clojure
-(-> {:filters {:year 2001} :keywords ["dr" :not "dre"] :limit 5}
-    api/search-artists
-    http-get)
+(->> {:filters {:year 2000} :keywords ["dr" :not "dre"] :limit 5}
+     api/search-artists
+     http-get
+     :artists
+     :items
+     (map :name))
+("Dr. John" "Dr Sid" "Dr Zeus" "Dr. Alban" "Dr. Know")
 ```
 ```clojure
 (api/search-artists {:keywords ["lil" :or "kim" :not "lil wayne"]})
